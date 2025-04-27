@@ -1,0 +1,71 @@
+<!-- weekly-grid.component.html -->
+<div class="weekly-planner-container">
+  <div class="week-navigation">
+    <button (click)="navigateToPreviousWeek()" class="nav-button">Previous Week</button>
+    <h2 class="week-title">
+      {{ currentWeekStart | date:'MMM d' }} - {{ getDayDate(6) | date:'MMM d, yyyy' }}
+    </h2>
+    <button (click)="navigateToNextWeek()" class="nav-button">Next Week</button>
+    <button (click)="navigateToCurrentWeek()" class="current-week-button">Current Week</button>
+  </div>
+
+  <div class="week-grid">
+    <!-- Day Headers -->
+    <div class="time-column header">
+      <div class="time-header">Time</div>
+    </div>
+    
+    <div *ngFor="let day of weekDays; let dayIndex = index" class="day-column header">
+      <div class="day-header">
+        <div class="day-name">{{ day }}</div>
+        <div class="day-date">{{ getDayDate(dayIndex) | date:'MMM d' }}</div>
+      </div>
+    </div>
+
+    <!-- Time Slots -->
+    <ng-container *ngFor="let timeSlot of timeSlots">
+      <div class="time-column">
+        <div class="time-slot">{{ timeSlot }}</div>
+      </div>
+      
+      <div *ngFor="let day of weekDays; let dayIndex = index" 
+           class="day-column"
+           (click)="createNewItem(dayIndex, timeSlot)">
+        <div class="day-slot">
+          <!-- Items at this time slot -->
+          <ng-container *ngFor="let item of getItemsForDay(dayIndex)">
+            <div *ngIf="timeSlot === (item.startTime | date:'H:mm')"
+                 class="planner-item"
+                 [ngClass]="calculatePriorityClass(item.priority)">
+              <div class="item-title">{{ item.title }}</div>
+              <div class="item-priority" *ngIf="item.priority">Priority: {{ item.priority }}%</div>
+              <div class="item-status" *ngIf="item.completed">✓</div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Daily Notes Quick Access -->
+  <div class="daily-notes-section">
+    <div class="notes-header">Daily Notes</div>
+    <div class="notes-container">
+      <div *ngFor="let day of weekDays; let dayIndex = index" class="day-notes">
+        <div class="day-notes-header">{{ day }}</div>
+        <textarea placeholder="Add notes for {{ day }}..." rows="2" class="notes-textarea"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reflections Quick Access -->
+  <div class="reflections-section">
+    <div class="reflections-header">Daily Reflections</div>
+    <div class="reflections-container">
+      <div *ngFor="let day of weekDays; let dayIndex = index" class="day-reflection">
+        <div class="day-reflection-header">{{ day }}</div>
+        <textarea placeholder="What did you learn today?" rows="2" class="reflection-textarea"></textarea>
+      </div>
+    </div>
+  </div>
+</div>

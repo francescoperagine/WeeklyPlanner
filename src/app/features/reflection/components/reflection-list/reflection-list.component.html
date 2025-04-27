@@ -1,0 +1,121 @@
+<!-- src/app/features/reflection/components/reflection-list/reflection-list.component.html -->
+<div class="reflections-container">
+    <h3>Reflections</h3>
+    
+    <!-- Add new reflection form -->
+    <div class="reflection-form">
+      <div class="form-group">
+        <label for="reflectionContent">What did you accomplish today?</label>
+        <textarea 
+          id="reflectionContent"
+          [(ngModel)]="newReflection.content" 
+          placeholder="Write your reflections here..."
+          rows="4"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="reflectionLessons">What did you learn?</label>
+        <textarea 
+          id="reflectionLessons"
+          [(ngModel)]="newReflection.lessons" 
+          placeholder="What lessons did you learn today?"
+          rows="3"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="reflectionImprovements">How can you improve?</label>
+        <textarea 
+          id="reflectionImprovements"
+          [(ngModel)]="newReflection.improvements" 
+          placeholder="What could you do better next time?"
+          rows="3"></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="reflectionActivity">Related Activity (Optional)</label>
+        <select id="reflectionActivity" [(ngModel)]="newReflection.activityId">
+          <option [ngValue]="null">Select an activity</option>
+          <option *ngFor="let item of plannerItems" [ngValue]="item.id">{{ item.title }}</option>
+        </select>
+      </div>
+      
+      <button (click)="addReflection()" class="add-button">Add Reflection</button>
+    </div>
+    
+    <!-- Reflections list -->
+    <div class="reflections-list">
+      <div *ngIf="reflections.length === 0" class="empty-state">
+        <p>No reflections for this date. Add one above!</p>
+      </div>
+      
+      <ng-container *ngFor="let reflection of reflections">
+        <div class="reflection-item">
+          <!-- View mode -->
+          <div *ngIf="editingReflectionId !== reflection.id" class="reflection-content">
+            <h4>Reflection</h4>
+            
+            <div *ngIf="reflection.activityId" class="reflection-activity">
+              Related to: {{ getActivityTitle(reflection.activityId) }}
+            </div>
+            
+            <div class="reflection-section">
+              <h5>Accomplishments</h5>
+              <p>{{ reflection.content }}</p>
+            </div>
+            
+            <div *ngIf="reflection.lessons" class="reflection-section">
+              <h5>Lessons Learned</h5>
+              <p>{{ reflection.lessons }}</p>
+            </div>
+            
+            <div *ngIf="reflection.improvements" class="reflection-section">
+              <h5>Areas for Improvement</h5>
+              <p>{{ reflection.improvements }}</p>
+            </div>
+            
+            <div class="reflection-actions">
+              <button (click)="setEditingReflectionId(reflection.id)" class="edit-button">Edit</button>
+              <button (click)="deleteReflection(reflection.id)" class="delete-button">Delete</button>
+            </div>
+          </div>
+          
+          <!-- Edit mode -->
+          <div *ngIf="editingReflectionId === reflection.id" class="reflection-edit">
+            <div class="form-group">
+              <label>What did you accomplish?</label>
+              <textarea 
+                [(ngModel)]="reflection.content" 
+                rows="4"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>What did you learn?</label>
+              <textarea 
+                [(ngModel)]="reflection.lessons" 
+                rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>How can you improve?</label>
+              <textarea 
+                [(ngModel)]="reflection.improvements" 
+                rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+              <label>Related Activity</label>
+              <select [(ngModel)]="reflection.activityId">
+                <option [ngValue]="null">Select an activity</option>
+                <option *ngFor="let item of plannerItems" [ngValue]="item.id">{{ item.title }}</option>
+              </select>
+            </div>
+            
+            <div class="edit-actions">
+              <button (click)="updateReflection(reflection)" class="save-button">Save</button>
+              <button (click)="clearEditingReflectionId()" class="cancel-button">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>

@@ -1,0 +1,41 @@
+<!-- src/app/core/components/sidebar/sidebar.component.html -->
+<aside class="app-sidebar">
+    <div class="sidebar-header">
+      <h3>Quick Access</h3>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <h4>Planner</h4>
+        <ul>
+          <li><a routerLink="/planner" routerLinkActive="active">Weekly View</a></li>
+          <li><a [routerLink]="['/planner/day', todayDate]" routerLinkActive="active">Today's Plan</a></li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <h4>Todo</h4>
+        <ul>
+          <li><a routerLink="/todo" routerLinkActive="active">Todo List</a></li>
+        </ul>
+      </div>
+      
+      <div class="nav-section">
+        <h4>Notes</h4>
+        <ul>
+          <li><a routerLink="/notes" routerLinkActive="active">All Notes</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h4>Reflections</h4>
+        <ul>
+          <li><a routerLink="/reflections" routerLinkActive="active">All Reflections</a></li>
+        </ul>
+      </div>
+    </nav>
+    
+    <div class="sidebar-footer">
+      <p>Made with ❤️ for self-improvement</p>
+    </div>
+  </aside>

@@ -1,0 +1,112 @@
+<!-- src/app/features/todo/components/todo-list/todo-list.component.html -->
+<div class="todo-container">
+    <h2 class="todo-header">Todo List</h2>
+    
+    <!-- Add new todo form -->
+    <div class="add-todo-form">
+      <div class="input-group">
+        <input 
+          type="text" 
+          [(ngModel)]="newTodoTitle" 
+          placeholder="Add a new todo..." 
+          class="todo-input"
+          (keyup.enter)="addTodo()">
+        
+        <div class="priority-slider">
+          <label for="prioritySlider">Priority: {{ newTodoPriority }}%</label>
+          <input 
+            type="range" 
+            id="prioritySlider" 
+            [(ngModel)]="newTodoPriority" 
+            min="0" 
+            max="100" 
+            step="5"
+            class="priority-input">
+        </div>
+        
+        <button 
+          (click)="addTodo()" 
+          class="add-button">
+          Add Todo
+        </button>
+      </div>
+    </div>
+    
+    <!-- Filter options -->
+    <div class="filter-options">
+      <button 
+        [class.active]="filterOption === 'all'"
+        (click)="filterOption = 'all'; applyFilter()">
+        All
+      </button>
+      <button 
+        [class.active]="filterOption === 'active'"
+        (click)="filterOption = 'active'; applyFilter()">
+        Active
+      </button>
+      <button 
+        [class.active]="filterOption === 'completed'"
+        (click)="filterOption = 'completed'; applyFilter()">
+        Completed
+      </button>
+    </div>
+    
+    <!-- Todo list -->
+    <div class="todo-list">
+      <div 
+        *ngFor="let todo of todoItems; trackBy: trackByTodoId" 
+        class="todo-item"
+        [ngClass]="getPriorityClass(todo.priority)">
+        
+        <div class="todo-content">
+          <!-- Checkbox for completion status -->
+          <div class="todo-checkbox">
+            <input 
+              type="checkbox" 
+              [checked]="todo.completed"
+              (change)="toggleTodoCompletion(todo)">
+          </div>
+          
+          <!-- Todo title -->
+          <div 
+            class="todo-title"
+            [ngClass]="{'completed': todo.completed}">
+            {{ todo.title }}
+          </div>
+          
+          <!-- Priority indicator -->
+          <div class="todo-priority">
+            <div class="priority-label">Priority: {{ todo.priority }}%</div>
+            <div class="priority-bar">
+              <div 
+                class="priority-progress" 
+                [ngStyle]="priorityService.getPriorityProgressStyle(todo.priority)">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Due date -->
+          <div class="todo-due-date">
+            <input 
+              type="date" 
+              [value]="todo.dueDate ? (todo.dueDate | date:'yyyy-MM-dd') : ''"
+              (change)="setDueDate(todo, $event)">
+          </div>
+          
+          <!-- Actions -->
+          <div class="todo-actions">
+            <button 
+              class="delete-button"
+              (click)="deleteTodo(todo.id)">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty state -->
+      <div *ngIf="todoItems.length === 0" class="empty-state">
+        <p>No todos to show. Add one above!</p>
+      </div>
+    </div>
+  </div>

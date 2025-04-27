@@ -1,0 +1,242 @@
+<!-- src/app/features/planner/components/daily-view/daily-view.component.html -->
+<div class="daily-view-container">
+  <div class="day-navigation">
+    <button (click)="navigateToPreviousDay()" class="nav-button">Previous Day</button>
+    <h2 class="day-title">{{ currentDate | date:'fullDate' }}</h2>
+    <button (click)="navigateToNextDay()" class="nav-button">Next Day</button>
+    <button (click)="navigateToToday()" class="today-button">Today</button>
+  </div>
+
+  <div class="content-grid">
+    <!-- Schedule section -->
+    <section class="schedule-section">
+      <div class="section-header">
+        <h3>Schedule</h3>
+        <a routerLink="/planner" class="back-link">Back to Weekly View</a>
+      </div>
+
+      <!-- Add new activity form -->
+      <div class="activity-form">
+        <h4>Add New Activity</h4>
+        <div class="form-group">
+          <label for="activityTitle">Title</label>
+          <input 
+            type="text" 
+            id="activityTitle" 
+            [(ngModel)]="newActivity.title" 
+            placeholder="Activity title">
+        </div>
+        
+        <div class="form-group">
+          <label for="activityDescription">Description</label>
+          <textarea 
+            id="activityDescription" 
+            [(ngModel)]="newActivity.description" 
+            placeholder="Activity description"></textarea>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group time-input">
+            <label for="startTime">Start Time</label>
+            <select id="startTime" [(ngModel)]="newActivity.startTime">
+              <option [value]="null">Select time</option>
+              <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group time-input">
+            <label for="endTime">End Time</label>
+            <select id="endTime" [(ngModel)]="newActivity.endTime">
+              <option [value]="null">Select time</option>
+              <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="activityPriority">Priority: {{ newActivity.priority }}%</label>
+          <input 
+            type="range" 
+            id="activityPriority" 
+            [(ngModel)]="newActivity.priority" 
+            min="0" 
+            max="100" 
+            step="5">
+        </div>
+        
+        <button (click)="addPlannerItem()" class="add-button">Add Activity</button>
+      </div>
+
+      <!-- Day schedule -->
+      <div class="schedule-list">
+        <h4>Today's Activities</h4>
+        
+        <div *ngIf="plannerItems.length === 0" class="empty-state">
+          <p>No activities scheduled for today. Add one above!</p>
+        </div>
+        
+        <div 
+          *ngFor="let item of plannerItems" 
+          class="schedule-item"
+          [ngClass]="getPriorityClass(item.priority)">
+          
+          <!-- View mode -->
+          <div *ngIf="editingItemId !== item.id" class="schedule-item-view">
+            <div class="item-header">
+              <div class="item-checkbox">
+                <input 
+                  type="checkbox" 
+                  [checked]="item.completed"
+                  (change)="toggleItemCompletion(item)">
+              </div>
+              
+              <h5 [ngClass]="{'completed': item.completed}">{{ item.title }}</h5>
+              
+              <div class="item-actions">
+                <button (click)="editingItemId = item.id" class="edit-button">Edit</button>
+                <button (click)="deletePlannerItem(item.id)" class="delete-button">Delete</button>
+              </div>
+            </div>
+            
+            <div class="item-details">
+              <div *ngIf="item.description" class="item-description">
+                {{ item.description }}
+              </div>
+              
+              <div class="item-meta">
+                <div *ngIf="item.startTime" class="item-time">
+                  <span>Time: {{ item.startTime | date:'shortTime' }}</span>
+                  <span *ngIf="item.endTime"> - {{ item.endTime | date:'shortTime' }}</span>
+                </div>
+                
+                <div class="item-priority">
+                  <span>Priority: {{ item.priority }}%</span>
+                  <div class="priority-bar">
+                    <div 
+                      class="priority-progress" 
+                      [ngStyle]="priorityService.getPriorityProgressStyle(item.priority)">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Edit mode -->
+          <div *ngIf="editingItemId === item.id" class="schedule-item-edit">
+            <div class="form-group">
+              <label for="editTitle">Title</label>
+              <input 
+                type="text" 
+                id="editTitle" 
+                [(ngModel)]="item.title" 
+                placeholder="Activity title">
+            </div>
+            
+            <div class="form-group">
+              <label for="editDescription">Description</label>
+              <textarea 
+                id="editDescription" 
+                [(ngModel)]="item.description" 
+                placeholder="Activity description"></textarea>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group time-input">
+                <label for="editStartTime">Start Time</label>
+                <select 
+                  id="editStartTime" 
+                  [(ngModel)]="item.startTime">
+                  <option [value]="null">Select time</option>
+                  <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+                </select>
+              </div>
+              
+              <div class="form-group time-input">
+                <label for="editEndTime">End Time</label>
+                <select 
+                  id="editEndTime" 
+                  [(ngModel)]="item.endTime">
+                  <option [value]="null">Select time</option>
+                  <option *ngFor="let time of timeSlots" [value]="time">{{ time }}</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="editPriority">Priority: {{ item.priority }}%</label>
+              <input 
+                type="range" 
+                id="editPriority" 
+                [(ngModel)]="item.priority" 
+                min="0" 
+                max="100" 
+                step="5">
+            </div>
+            
+            <div class="edit-actions">
+              <button (click)="updatePlannerItem(item)" class="save-button">Save</button>
+              <button (click)="editingItemId = null" class="cancel-button">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right sidebar with Notes and Reflections -->
+    <section class="sidebar-section">
+      <!-- Notes -->
+      <div class="notes-container">
+        <h3>Daily Notes</h3>
+        
+        <!-- Add new note form -->
+        <div class="note-form">
+          <textarea 
+            [(ngModel)]="newNote.content" 
+            placeholder="Add a note for today..."
+            rows="4"></textarea>
+          <button (click)="addNote()" class="add-button">Add Note</button>
+        </div>
+        
+        <!-- Notes list -->
+        <div class="notes-list">
+          <div *ngIf="notes.length === 0" class="empty-state">
+            <p>No notes for today. Add one above!</p>
+          </div>
+          
+          <div *ngFor="let note of notes" class="note-item">
+            <!-- View mode -->
+            <div *ngIf="editingNoteId !== note.id" class="note-content">
+              <p>{{ note.content }}</p>
+              <div class="note-actions">
+                <button (click)="editingNoteId = note.id" class="edit-button">Edit</button>
+                <button (click)="deleteNote(note.id)" class="delete-button">Delete</button>
+              </div>
+            </div>
+            
+            <!-- Edit mode -->
+            <div *ngIf="editingNoteId === note.id" class="note-edit">
+              <textarea 
+                [(ngModel)]="note.content" 
+                rows="4"></textarea>
+              <div class="edit-actions">
+                <button (click)="updateNote(note)" class="save-button">Save</button>
+                <button (click)="editingNoteId = null" class="cancel-button">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Reflections -->
+      <app-reflection-list
+        [reflections]="reflections"
+        [plannerItems]="plannerItems"
+        [date]="currentDate"
+        (reflectionAdded)="onReflectionAdded($event)"
+        (reflectionUpdated)="onReflectionUpdated($event)"
+        (reflectionDeleted)="onReflectionDeleted($event)">
+      </app-reflection-list>
+    </section>
+  </div>
+</div>
