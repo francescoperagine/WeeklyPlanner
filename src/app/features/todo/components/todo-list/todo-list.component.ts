@@ -11,7 +11,7 @@ import { TodoItem } from '@shared/models/todo-item.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './todo-list.component.html',
-  styleUrls: ['./todo-list.component.scss']
+  styleUrls: ['./todo-list.component.css']
 })
 export class TodoListComponent implements OnInit {
   todoItems: TodoItem[] = [];

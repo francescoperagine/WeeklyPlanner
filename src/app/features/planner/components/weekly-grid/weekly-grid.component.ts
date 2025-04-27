@@ -11,7 +11,7 @@ import { PlannerItem } from '@shared/models/planner-item.model';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './weekly-grid.component.html',
-  styleUrls: ['./weekly-grid.component.scss']
+  styleUrls: ['./weekly-grid.component.css']
 })
 export class WeeklyGridComponent implements OnInit {
   weekDays: string[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

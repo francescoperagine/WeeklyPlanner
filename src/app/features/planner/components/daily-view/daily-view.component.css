@@ -1,0 +1,110 @@
+.daily-view-container {
+  @apply relative h-full bg-white;
+  height: calc(100vh - 60px); /* Adjust based on your header height */
+  overflow-y: auto;
+}
+
+/* Time grid styling */
+.time-grid {
+  @apply relative;
+}
+
+.time-slot {
+  @apply flex border-b border-gray-100;
+  height: 60px; /* Height of each hour slot */
+}
+
+.time-label {
+  @apply w-16 text-xs text-gray-500 text-right pr-2 pt-1 flex-shrink-0;
+}
+
+.time-cell {
+  @apply flex-grow relative border-l border-gray-100;
+  
+  &.half-hour {
+    @apply border-t border-dashed border-gray-100;
+  }
+}
+
+/* Event card styling */
+.event-card {
+  @apply absolute left-0 overflow-hidden rounded ml-1 w-[calc(100%-8px)];
+  z-index: 5;
+  min-height: 24px;
+}
+
+/* Priority classes for events */
+.priority-critical {
+  @apply bg-red-100 border-l-4 border-red-500;
+}
+
+.priority-high {
+  @apply bg-orange-100 border-l-4 border-orange-500;
+}
+
+.priority-medium {
+  @apply bg-yellow-100 border-l-4 border-yellow-500;
+}
+
+.priority-low {
+  @apply bg-green-100 border-l-4 border-green-500;
+}
+
+.priority-optional {
+  @apply bg-gray-100 border-l-4 border-gray-500;
+}
+
+.priority-none {
+  @apply bg-gray-50 border-l-4 border-gray-300;
+}
+
+/* Current time indicator */
+.current-time-indicator {
+  @apply absolute flex items-center w-full;
+  z-index: 10;
+}
+
+/* FAB (Floating Action Button) */
+.fab {
+  @apply fixed bottom-6 right-6 w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg;
+  z-index: 50;
+  
+  &:hover {
+    @apply bg-blue-600;
+  }
+  
+  &:active {
+    @apply bg-blue-700;
+  }
+}
+
+/* New Activity Panel */
+.new-activity-panel {
+  @apply fixed inset-0 z-50 flex items-end md:items-center justify-center;
+}
+
+.panel-overlay {
+  @apply absolute inset-0 bg-black bg-opacity-50;
+}
+
+.panel-content {
+  @apply relative bg-white rounded-t-lg md:rounded-lg shadow-xl w-full md:max-w-lg max-h-[90vh] overflow-auto;
+  
+  @screen md {
+    max-height: 85vh;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .time-label {
+    @apply w-12 text-[10px];
+  }
+}
+
+/* For print media */
+@media print {
+  .fab {
+    @apply hidden;
+  }
+}

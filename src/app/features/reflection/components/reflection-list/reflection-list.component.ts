@@ -10,7 +10,7 @@ import { PlannerItem } from '@shared/models/planner-item.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './reflection-list.component.html',
-  styleUrls: ['./reflection-list.component.scss']
+  styleUrls: ['./reflection-list.component.css']
 })
 export class ReflectionListComponent implements OnInit {
   @Input() reflections: Reflection[] = [];

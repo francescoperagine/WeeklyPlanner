@@ -1,4 +1,3 @@
-/* src/app/features/todo/components/todo-list/todo-list.component.scss */
 .todo-container {
     max-width: 800px;
     margin: 0 auto;
@@ -212,7 +211,6 @@
     }
   }
   
-  // Priority classes (border styles)
   .priority-critical {
     border-left: 4px solid #dc3545;
   }
@@ -237,7 +235,6 @@
     border-left: 4px solid #ced4da;
   }
   
-  // Responsive adjustments
   @media (min-width: 768px) {
     .add-todo-form {
       .input-group {

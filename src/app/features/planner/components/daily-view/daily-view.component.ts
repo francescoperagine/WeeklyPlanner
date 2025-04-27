@@ -15,9 +15,9 @@ import { ReflectionListComponent } from '@features/reflection/components/reflect
 @Component({
   selector: 'app-daily-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReflectionListComponent],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './daily-view.component.html',
-  styleUrls: ['./daily-view.component.scss']
+  styleUrls: ['./daily-view.component.css']
 })
 export class DailyViewComponent implements OnInit {
   currentDate: Date = new Date();
@@ -25,18 +25,18 @@ export class DailyViewComponent implements OnInit {
   notes: Note[] = [];
   reflections: Reflection[] = [];
   
+  // New activity panel state
+  showNewActivityPanel: boolean = false;
+  
   // Form fields for new items
   newActivity: PlannerItem = this.createEmptyPlannerItem();
   newNote: Note = this.createEmptyNote();
-  newReflection: Reflection = this.createEmptyReflection();
   
   // Time slots for scheduling
   timeSlots: string[] = [];
   
-  // Editing states
-  editingItemId: string | null = null;
-  editingNoteId: string | null = null;
-  editingReflectionId: string | null = null;
+  // Hours for the day view
+  hoursOfDay: number[] = Array.from({ length: 24 }, (_, i) => i);
   
   constructor(
     private route: ActivatedRoute,
@@ -109,6 +109,93 @@ export class DailyViewComponent implements OnInit {
     return date.toISOString().split('T')[0];
   }
 
+  // New methods for the calendar-like view
+  formatHour(hour: number): string {
+    if (hour === 0) return '12 AM';
+    if (hour === 12) return '12 PM';
+    return hour < 12 ? `${hour} AM` : `${hour - 12} PM`;
+  }
+
+  isToday(): boolean {
+    const today = new Date();
+    return (
+      this.currentDate.getDate() === today.getDate() &&
+      this.currentDate.getMonth() === today.getMonth() &&
+      this.currentDate.getFullYear() === today.getFullYear()
+    );
+  }
+
+  getCurrentTimePosition(): number {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    
+    // Calculate position based on hours and minutes
+    // Each hour is 60px height (defined in CSS)
+    return (hours * 60) + (minutes); 
+  }
+
+  getAllDayItems(): PlannerItem[] {
+    return this.plannerItems.filter(item => {
+      // Consider an item "all day" if it has no specific start/end time
+      return !item.startTime && !item.endTime;
+    });
+  }
+
+  getItemsForHour(hour: number): PlannerItem[] {
+    return this.plannerItems.filter(item => {
+      if (!item.startTime) return false;
+      
+      const itemDate = new Date(item.startTime);
+      return itemDate.getHours() === hour && itemDate.getMinutes() < 30;
+    });
+  }
+
+  getItemsForHalfHour(hour: number): PlannerItem[] {
+    return this.plannerItems.filter(item => {
+      if (!item.startTime) return false;
+      
+      const itemDate = new Date(item.startTime);
+      return itemDate.getHours() === hour && itemDate.getMinutes() >= 30;
+    });
+  }
+
+  calculateEventHeight(item: PlannerItem): number {
+    if (!item.startTime || !item.endTime) return 60; // Default height
+    
+    const startTime = new Date(item.startTime);
+    const endTime = new Date(item.endTime);
+    
+    // Calculate duration in minutes
+    const durationMinutes = (endTime.getTime() - startTime.getTime()) / (1000 * 60);
+    
+    // Return height based on duration (1 minute = 1px)
+    return Math.max(24, durationMinutes); // Minimum height of 24px
+  }
+
+  // Activity panel methods
+  openNewActivityPanel(hour?: number, minutes?: number): void {
+    this.newActivity = this.createEmptyPlannerItem();
+    
+    // If hour is provided, set the start and end times
+    if (hour !== undefined) {
+      const startDate = new Date(this.currentDate);
+      startDate.setHours(hour, minutes || 0, 0, 0);
+      
+      const endDate = new Date(startDate);
+      endDate.setHours(hour + 1, minutes || 0, 0, 0);
+      
+      this.newActivity.startTime = startDate;
+      this.newActivity.endTime = endDate;
+    }
+    
+    this.showNewActivityPanel = true;
+  }
+
+  closeNewActivityPanel(): void {
+    this.showNewActivityPanel = false;
+  }
+
   // Planner item methods
   createEmptyPlannerItem(): PlannerItem {
     return {
@@ -123,16 +210,16 @@ export class DailyViewComponent implements OnInit {
   addPlannerItem(): void {
     if (!this.newActivity.title.trim()) return;
     
-    // Set the correct date and time
+    // Set the correct date
     this.newActivity.date = new Date(this.currentDate);
     
-    // Handle time strings
-    let startTime: Date | undefined;
-    let endTime: Date | undefined;
+    // Handle time strings if needed
+    let startTime: Date | undefined = this.newActivity.startTime;
+    let endTime: Date | undefined = this.newActivity.endTime;
     
-    // Extract hours and minutes from the time string (HH:MM)
-    if (this.newActivity.startTime) {
-      startTime = new Date(this.newActivity.date);
+    // If times are strings, convert them
+    if (typeof this.newActivity.startTime === 'string') {
+      startTime = new Date(this.currentDate);
       const startTimeStr = this.newActivity.startTime as unknown as string;
       if (typeof startTimeStr === 'string') {
         const timeComponents = startTimeStr.split(':');
@@ -144,8 +231,8 @@ export class DailyViewComponent implements OnInit {
       }
     }
     
-    if (this.newActivity.endTime) {
-      endTime = new Date(this.newActivity.date);
+    if (typeof this.newActivity.endTime === 'string') {
+      endTime = new Date(this.currentDate);
       const endTimeStr = this.newActivity.endTime as unknown as string;
       if (typeof endTimeStr === 'string') {
         const timeComponents = endTimeStr.split(':');
@@ -168,51 +255,13 @@ export class DailyViewComponent implements OnInit {
       tags: this.newActivity.tags
     }).subscribe(() => {
       this.loadDayData();
-      this.newActivity = this.createEmptyPlannerItem();
+      this.closeNewActivityPanel();
     });
   }
 
-  updatePlannerItem(item: PlannerItem): void {
-    // For time string to Date conversion
-    if (typeof item.startTime === 'string') {
-      const startTime = new Date(item.date);
-      const timeComponents = (item.startTime as string).split(':');
-      const hours = parseInt(timeComponents[0], 10);
-      const minutes = parseInt(timeComponents[1], 10);
-      startTime.setHours(hours, minutes, 0, 0);
-      item.startTime = startTime;
-    }
-    
-    if (typeof item.endTime === 'string') {
-      const endTime = new Date(item.date);
-      const timeComponents = (item.endTime as string).split(':');
-      const hours = parseInt(timeComponents[0], 10);
-      const minutes = parseInt(timeComponents[1], 10);
-      endTime.setHours(hours, minutes, 0, 0);
-      item.endTime = endTime;
-    }
-    
-    this.plannerService.updateItem(item)
-      .subscribe(() => {
-        this.loadDayData();
-        this.editingItemId = null;
-      });
-  }
-
-  deletePlannerItem(id: string): void {
-    if (confirm('Are you sure you want to delete this activity?')) {
-      this.plannerService.deleteItem(id)
-        .subscribe(() => {
-          this.loadDayData();
-        });
-    }
-  }
-
-  toggleItemCompletion(item: PlannerItem): void {
-    this.plannerService.toggleItemCompletion(item)
-      .subscribe(() => {
-        this.loadDayData();
-      });
+  // Helper methods
+  getPriorityClass(priority: number | undefined): string {
+    return this.priorityService.getPriorityCssClass(priority);
   }
 
   // Note methods
@@ -224,112 +273,7 @@ export class DailyViewComponent implements OnInit {
     };
   }
 
-  addNote(): void {
-    if (!this.newNote.content.trim()) return;
-    
-    this.newNote.date = new Date(this.currentDate);
-    
-    this.notesService.createNote({
-      content: this.newNote.content,
-      date: this.newNote.date,
-      tags: this.newNote.tags
-    }).subscribe(() => {
-      this.loadDayData();
-      this.newNote = this.createEmptyNote();
-    });
-  }
-
-  updateNote(note: Note): void {
-    this.notesService.updateNote(note)
-      .subscribe(() => {
-        this.loadDayData();
-        this.editingNoteId = null;
-      });
-  }
-
-  deleteNote(id: string): void {
-    if (confirm('Are you sure you want to delete this note?')) {
-      this.notesService.deleteNote(id)
-        .subscribe(() => {
-          this.loadDayData();
-        });
-    }
-  }
-
-  // Reflection methods
-  createEmptyReflection(): Reflection {
-    return {
-      id: '',
-      date: new Date(this.currentDate),
-      content: '',
-      lessons: '',
-      improvements: ''
-    };
-  }
-
-  addReflection(): void {
-    if (!this.newReflection.content.trim()) return;
-    
-    this.newReflection.date = new Date(this.currentDate);
-    
-    this.reflectionService.createReflection({
-      date: this.newReflection.date,
-      content: this.newReflection.content,
-      lessons: this.newReflection.lessons,
-      improvements: this.newReflection.improvements,
-      activityId: this.newReflection.activityId
-    }).subscribe(() => {
-      this.loadDayData();
-      this.newReflection = this.createEmptyReflection();
-    });
-  }
-
-  updateReflection(reflection: Reflection): void {
-    this.reflectionService.updateReflection(reflection)
-      .subscribe(() => {
-        this.loadDayData();
-        this.editingReflectionId = null;
-      });
-  }
-
-  deleteReflection(id: string): void {
-    if (confirm('Are you sure you want to delete this reflection?')) {
-      this.reflectionService.deleteReflection(id)
-        .subscribe(() => {
-          this.loadDayData();
-        });
-    }
-  }
-
-  // Helper methods
-  getPriorityClass(priority: number | undefined): string {
-    return this.priorityService.getPriorityCssClass(priority);
-  }
-
-  getFormattedTimeForInput(date: Date | undefined): string {
-    if (!date) return '';
-    
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-  }
-  
-  getActivityTitle(activityId: string | undefined): string {
-    if (!activityId) return 'Unknown activity';
-    
-    const activity = this.plannerItems.find(item => item.id === activityId);
-    return activity ? activity.title : 'Unknown activity';
-  }
-  
-  // Safer methods for managing editing states
-  setEditingReflectionId(id: string): void {
-    this.editingReflectionId = id;
-  }
-  
-  clearEditingReflectionId(): void {
-    this.editingReflectionId = null;
-  }
-
+  // Event handlers for reflection component
   onReflectionAdded(reflection: Reflection): void {
     this.reflectionService.createReflection(reflection)
       .subscribe(() => {
@@ -350,5 +294,4 @@ export class DailyViewComponent implements OnInit {
         this.loadDayData();
       });
   }
-  
 }
