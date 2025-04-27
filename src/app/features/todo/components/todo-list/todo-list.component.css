@@ -84,7 +84,7 @@
       transition: all 0.2s;
       
       &:hover {
-        background: #e9ecef;
+        background-color: #e9ecef;
       }
       
       &.active {

@@ -1,4 +1,3 @@
-// src/app/features/planner/components/daily-view/daily-view.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -10,7 +9,6 @@ import { PriorityService } from '@core/services/priority.service';
 import { PlannerItem } from '@shared/models/planner-item.model';
 import { Note } from '@shared/models/note.model';
 import { Reflection } from '@shared/models/reflection.model';
-import { ReflectionListComponent } from '@features/reflection/components/reflection-list/reflection-list.component';
 
 @Component({
   selector: 'app-daily-view',

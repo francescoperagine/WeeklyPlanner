@@ -4,7 +4,6 @@
   overflow-y: auto;
 }
 
-/* Time grid styling */
 .time-grid {
   @apply relative;
 }
@@ -28,7 +27,7 @@
 
 /* Event card styling */
 .event-card {
-  @apply absolute left-0 overflow-hidden rounded ml-1 w-[calc(100%-8px)];
+  @apply absolute left-0 overflow-hidden rounded ml-1 w-[calc(100% - 8px)];
   z-index: 5;
   min-height: 24px;
 }
