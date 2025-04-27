@@ -97,10 +97,10 @@ export class WeeklyGridComponent implements OnInit {
   }
 
   calculatePriorityClass(priority: number | undefined): string {
-    if (!priority) return 'priority-none';
+    if (!priority) return 'bg-gray-100 border-l-[4px] border-l-[#ced4da]';
     
-    if (priority < 30) return 'priority-low';
-    if (priority < 70) return 'priority-medium';
-    return 'priority-high';
+    if (priority < 30) return 'bg-[#d4edda] border-l-[4px] border-l-[#28a745]';
+    if (priority < 70) return 'bg-[#fff3cd] border-l-[4px] border-l-[#ffc107]';
+    return 'bg-[#f8d7da] border-l-[4px] border-l-[#dc3545]';
   }
 }

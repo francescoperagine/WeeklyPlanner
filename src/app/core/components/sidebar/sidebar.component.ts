@@ -1,4 +1,3 @@
-// src/app/core/components/sidebar/sidebar.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -11,6 +10,5 @@ import { RouterModule } from '@angular/router';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  // Get current date for today's link
   todayDate = new Date().toISOString().split('T')[0];
 }

@@ -1,119 +1,157 @@
-<div class="reflections-container">
-    <h3>Reflections</h3>
-    
-    <div class="reflection-form">
-      <div class="form-group">
-        <label for="reflectionContent">What did you accomplish today?</label>
-        <textarea 
-          id="reflectionContent"
-          [(ngModel)]="newReflection.content" 
-          placeholder="Write your reflections here..."
-          rows="4"></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label for="reflectionLessons">What did you learn?</label>
-        <textarea 
-          id="reflectionLessons"
-          [(ngModel)]="newReflection.lessons" 
-          placeholder="What lessons did you learn today?"
-          rows="3"></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label for="reflectionImprovements">How can you improve?</label>
-        <textarea 
-          id="reflectionImprovements"
-          [(ngModel)]="newReflection.improvements" 
-          placeholder="What could you do better next time?"
-          rows="3"></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label for="reflectionActivity">Related Activity (Optional)</label>
-        <select id="reflectionActivity" [(ngModel)]="newReflection.activityId">
-          <option [ngValue]="null">Select an activity</option>
-          <option *ngFor="let item of plannerItems" [ngValue]="item.id">{{ item.title }}</option>
-        </select>
-      </div>
-      
-      <button (click)="addReflection()" class="add-button">Add Reflection</button>
+<div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+  <h3 class="mt-0 mb-4 text-[#343a40] pb-3 border-b border-[#e9ecef] text-xl font-medium">Reflections</h3>
+  
+  <!-- Reflection Form -->
+  <div class="mb-6">
+    <div class="mb-4">
+      <label for="reflectionContent" class="block mb-2 font-medium text-[#495057]">What did you accomplish today?</label>
+      <textarea 
+        id="reflectionContent"
+        [(ngModel)]="newReflection.content" 
+        placeholder="Write your reflections here..."
+        rows="4"
+        class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+      </textarea>
     </div>
     
-    <!-- Reflections list -->
-    <div class="reflections-list">
-      <div *ngIf="reflections.length === 0" class="empty-state">
-        <p>No reflections for this date. Add one above!</p>
-      </div>
-      
-      <ng-container *ngFor="let reflection of reflections">
-        <div class="reflection-item">
-          <!-- View mode -->
-          <div *ngIf="editingReflectionId !== reflection.id" class="reflection-content">
-            <h4>Reflection</h4>
-            
-            <div *ngIf="reflection.activityId" class="reflection-activity">
-              Related to: {{ getActivityTitle(reflection.activityId) }}
-            </div>
-            
-            <div class="reflection-section">
-              <h5>Accomplishments</h5>
-              <p>{{ reflection.content }}</p>
-            </div>
-            
-            <div *ngIf="reflection.lessons" class="reflection-section">
-              <h5>Lessons Learned</h5>
-              <p>{{ reflection.lessons }}</p>
-            </div>
-            
-            <div *ngIf="reflection.improvements" class="reflection-section">
-              <h5>Areas for Improvement</h5>
-              <p>{{ reflection.improvements }}</p>
-            </div>
-            
-            <div class="reflection-actions">
-              <button (click)="setEditingReflectionId(reflection.id)" class="edit-button">Edit</button>
-              <button (click)="deleteReflection(reflection.id)" class="delete-button">Delete</button>
-            </div>
+    <div class="mb-4">
+      <label for="reflectionLessons" class="block mb-2 font-medium text-[#495057]">What did you learn?</label>
+      <textarea 
+        id="reflectionLessons"
+        [(ngModel)]="newReflection.lessons" 
+        placeholder="What lessons did you learn today?"
+        rows="3"
+        class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+      </textarea>
+    </div>
+    
+    <div class="mb-4">
+      <label for="reflectionImprovements" class="block mb-2 font-medium text-[#495057]">How can you improve?</label>
+      <textarea 
+        id="reflectionImprovements"
+        [(ngModel)]="newReflection.improvements" 
+        placeholder="What could you do better next time?"
+        rows="3"
+        class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+      </textarea>
+    </div>
+    
+    <div class="mb-4">
+      <label for="reflectionActivity" class="block mb-2 font-medium text-[#495057]">Related Activity (Optional)</label>
+      <select 
+        id="reflectionActivity" 
+        [(ngModel)]="newReflection.activityId"
+        class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+        <option [ngValue]="null">Select an activity</option>
+        <option *ngFor="let item of plannerItems" [ngValue]="item.id">{{ item.title }}</option>
+      </select>
+    </div>
+    
+    <button 
+      (click)="addReflection()" 
+      class="px-4 py-2 bg-[#007bff] text-white border-none rounded-md cursor-pointer text-sm transition-colors hover:bg-[#0069d9]">
+      Add Reflection
+    </button>
+  </div>
+  
+  <!-- Reflections list -->
+  <div>
+    <div *ngIf="reflections.length === 0" class="text-center p-6 bg-[#f8f9fa] rounded-md text-[#6c757d]">
+      <p class="m-0">No reflections for this date. Add one above!</p>
+    </div>
+    
+    <ng-container *ngFor="let reflection of reflections">
+      <div class="bg-[#f8f9fa] rounded-md p-4 mb-4 shadow-sm">
+        <!-- View mode -->
+        <div *ngIf="editingReflectionId !== reflection.id" class="reflection-content">
+          <h4 class="mt-0 mb-3 text-[#343a40] font-medium">Reflection</h4>
+          
+          <div *ngIf="reflection.activityId" class="italic text-[#6c757d] mb-3">
+            Related to: {{ getActivityTitle(reflection.activityId) }}
           </div>
           
-          <!-- Edit mode -->
-          <div *ngIf="editingReflectionId === reflection.id" class="reflection-edit">
-            <div class="form-group">
-              <label>What did you accomplish?</label>
-              <textarea 
-                [(ngModel)]="reflection.content" 
-                rows="4"></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label>What did you learn?</label>
-              <textarea 
-                [(ngModel)]="reflection.lessons" 
-                rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label>How can you improve?</label>
-              <textarea 
-                [(ngModel)]="reflection.improvements" 
-                rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-              <label>Related Activity</label>
-              <select [(ngModel)]="reflection.activityId">
-                <option [ngValue]="null">Select an activity</option>
-                <option *ngFor="let item of plannerItems" [ngValue]="item.id">{{ item.title }}</option>
-              </select>
-            </div>
-            
-            <div class="edit-actions">
-              <button (click)="updateReflection(reflection)" class="save-button">Save</button>
-              <button (click)="clearEditingReflectionId()" class="cancel-button">Cancel</button>
-            </div>
+          <div class="mb-4">
+            <h5 class="mt-0 mb-1 text-[#495057] font-medium">Accomplishments</h5>
+            <p class="m-0 text-[#495057]">{{ reflection.content }}</p>
+          </div>
+          
+          <div *ngIf="reflection.lessons" class="mb-4">
+            <h5 class="mt-0 mb-1 text-[#495057] font-medium">Lessons Learned</h5>
+            <p class="m-0 text-[#495057]">{{ reflection.lessons }}</p>
+          </div>
+          
+          <div *ngIf="reflection.improvements" class="mb-4">
+            <h5 class="mt-0 mb-1 text-[#495057] font-medium">Areas for Improvement</h5>
+            <p class="m-0 text-[#495057]">{{ reflection.improvements }}</p>
+          </div>
+          
+          <div class="flex justify-end gap-2 mt-3">
+            <button 
+              (click)="setEditingReflectionId(reflection.id)" 
+              class="px-3 py-1 bg-[#6c757d] text-white border-none rounded cursor-pointer text-sm transition-colors hover:bg-[#5a6268]">
+              Edit
+            </button>
+            <button 
+              (click)="deleteReflection(reflection.id)" 
+              class="px-3 py-1 bg-[#dc3545] text-white border-none rounded cursor-pointer text-sm transition-colors hover:bg-[#c82333]">
+              Delete
+            </button>
           </div>
         </div>
-      </ng-container>
-    </div>
+        
+        <!-- Edit mode -->
+        <div *ngIf="editingReflectionId === reflection.id">
+          <div class="mb-4">
+            <label class="block mb-2 font-medium text-[#495057]">What did you accomplish?</label>
+            <textarea 
+              [(ngModel)]="reflection.content" 
+              rows="4"
+              class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+            </textarea>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block mb-2 font-medium text-[#495057]">What did you learn?</label>
+            <textarea 
+              [(ngModel)]="reflection.lessons" 
+              rows="3"
+              class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+            </textarea>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block mb-2 font-medium text-[#495057]">How can you improve?</label>
+            <textarea 
+              [(ngModel)]="reflection.improvements" 
+              rows="3"
+              class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+            </textarea>
+          </div>
+          
+          <div class="mb-4">
+            <label class="block mb-2 font-medium text-[#495057]">Related Activity</label>
+            <select 
+              [(ngModel)]="reflection.activityId"
+              class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+              <option [ngValue]="null">Select an activity</option>
+              <option *ngFor="let item of plannerItems" [ngValue]="item.id">{{ item.title }}</option>
+            </select>
+          </div>
+          
+          <div class="flex justify-end gap-2 mt-4">
+            <button 
+              (click)="updateReflection(reflection)" 
+              class="px-3 py-1 bg-[#007bff] text-white border-none rounded cursor-pointer text-sm transition-colors hover:bg-[#0069d9]">
+              Save
+            </button>
+            <button 
+              (click)="clearEditingReflectionId()" 
+              class="px-3 py-1 bg-[#f8f9fa] border border-[#ced4da] text-[#495057] rounded cursor-pointer text-sm transition-colors hover:bg-[#e2e6ea]">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
   </div>
+</div>

@@ -1,10 +1,44 @@
-<header class="app-header">
+<header class="bg-[#343a40] shadow-sm sticky top-0 z-[1000]">
+  <div class="w-full max-w-[1200px] mx-auto px-4">
+    <div class="flex justify-between items-center h-[60px]">
+      <div class="text-white">
+        <a routerLink="/" class="text-[1.5rem] font-bold no-underline hover:text-[#007bff] transition-colors">
+          {{ appTitle }}
+        </a>
+      </div>
+      
+      <nav class="main-nav">
+        <ul class="flex list-none m-0 p-0">
+          <li class="ml-4">
+            <a routerLink="/planner" routerLinkActive="bg-[#007bff]" 
+              class="text-white no-underline text-base px-3 py-2 rounded hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+              Planner
+            </a>
+          </li>
+          <li class="ml-4">
+            <a routerLink="/todo" routerLinkActive="bg-[#007bff]" 
+              class="text-white no-underline text-base px-3 py-2 rounded hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+              Todo
+            </a>
+          </li>
+          <li class="ml-4">
+            <a routerLink="/notes" routerLinkActive="bg-[#007bff]" 
+              class="text-white no-underline text-base px-3 py-2 rounded hover:bg-[rgba(255,255,255,0.1)] transition-colors">
+              Notes
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<!-- <header class="app-header">
     <div class="container">
       <div class="header-content">
         <div class="logo">
           <a routerLink="/">{{ appTitle }}</a>
         </div>
-        
         <nav class="main-nav">
           <ul>
             <li><a routerLink="/planner" routerLinkActive="active">Planner</a></li>
@@ -14,4 +48,4 @@
         </nav>
       </div>
     </div>
-  </header>
+  </header> -->

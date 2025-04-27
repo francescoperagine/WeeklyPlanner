@@ -1,5 +1,74 @@
-<!-- src/app/core/components/sidebar/sidebar.component.html -->
-<aside class="app-sidebar">
+<aside class="bg-[#f8f9fa] border-r border-[#e9ecef] h-full min-h-[calc(100vh-60px)] w-[250px] py-5 flex flex-col">
+  <div class="px-5 pb-4 border-b border-[#e9ecef]">
+    <h3 class="m-0 text-[#343a40] text-[1.2rem]">Quick Access</h3>
+  </div>
+  
+  <nav class="flex-1 py-4 overflow-y-auto">
+    <!-- Planner Section -->
+    <div class="mb-5">
+      <h4 class="px-5 m-0 mb-2 text-[#6c757d] text-[0.9rem] uppercase tracking-[1px]">Planner</h4>
+      <ul class="list-none p-0 m-0">
+        <li>
+          <a routerLink="/planner" routerLinkActive="bg-[#e9ecef] text-[#007bff] border-l-[3px] border-l-[#007bff] font-medium" 
+            class="block py-2 px-5 text-[#495057] no-underline text-[0.95rem] border-l-[3px] border-l-transparent transition-colors hover:bg-[#e9ecef] hover:text-[#007bff]">
+            Weekly View
+          </a>
+        </li>
+        <li>
+          <a [routerLink]="['/planner/day', todayDate]" routerLinkActive="bg-[#e9ecef] text-[#007bff] border-l-[3px] border-l-[#007bff] font-medium" 
+            class="block py-2 px-5 text-[#495057] no-underline text-[0.95rem] border-l-[3px] border-l-transparent transition-colors hover:bg-[#e9ecef] hover:text-[#007bff]">
+            Today's Plan
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Todo Section -->
+    <div class="mb-5">
+      <h4 class="px-5 m-0 mb-2 text-[#6c757d] text-[0.9rem] uppercase tracking-[1px]">Todo</h4>
+      <ul class="list-none p-0 m-0">
+        <li>
+          <a routerLink="/todo" routerLinkActive="bg-[#e9ecef] text-[#007bff] border-l-[3px] border-l-[#007bff] font-medium" 
+            class="block py-2 px-5 text-[#495057] no-underline text-[0.95rem] border-l-[3px] border-l-transparent transition-colors hover:bg-[#e9ecef] hover:text-[#007bff]">
+            Todo List
+          </a>
+        </li>
+      </ul>
+    </div>
+    
+    <!-- Notes Section -->
+    <div class="mb-5">
+      <h4 class="px-5 m-0 mb-2 text-[#6c757d] text-[0.9rem] uppercase tracking-[1px]">Notes</h4>
+      <ul class="list-none p-0 m-0">
+        <li>
+          <a routerLink="/notes" routerLinkActive="bg-[#e9ecef] text-[#007bff] border-l-[3px] border-l-[#007bff] font-medium" 
+            class="block py-2 px-5 text-[#495057] no-underline text-[0.95rem] border-l-[3px] border-l-transparent transition-colors hover:bg-[#e9ecef] hover:text-[#007bff]">
+            All Notes
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Reflections Section -->
+    <div class="mb-5">
+      <h4 class="px-5 m-0 mb-2 text-[#6c757d] text-[0.9rem] uppercase tracking-[1px]">Reflections</h4>
+      <ul class="list-none p-0 m-0">
+        <li>
+          <a routerLink="/reflections" routerLinkActive="bg-[#e9ecef] text-[#007bff] border-l-[3px] border-l-[#007bff] font-medium" 
+            class="block py-2 px-5 text-[#495057] no-underline text-[0.95rem] border-l-[3px] border-l-transparent transition-colors hover:bg-[#e9ecef] hover:text-[#007bff]">
+            All Reflections
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  
+  <div class="px-5 py-4 border-t border-[#e9ecef] text-[0.8rem] text-[#6c757d] text-center">
+    <p class="m-0">Made with ❤️ for self-improvement</p>
+  </div>
+</aside>
+
+<!-- <aside class="app-sidebar">
     <div class="sidebar-header">
       <h3>Quick Access</h3>
     </div>
@@ -38,4 +107,4 @@
     <div class="sidebar-footer">
       <p>Made with ❤️ for self-improvement</p>
     </div>
-  </aside>
+  </aside> -->

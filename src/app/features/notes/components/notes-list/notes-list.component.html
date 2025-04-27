@@ -1,1 +1,143 @@
-<p>notes-list works!</p>
+<div class="container mx-auto p-4 md:p-6">
+    <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+      <h2 class="text-2xl font-semibold text-[#343a40] mb-6">Notes</h2>
+      
+      <!-- Create Note Form -->
+      <div class="mb-8 bg-[#f8f9fa] p-4 rounded-lg">
+        <h3 class="text-lg font-medium text-[#495057] mb-4">Create New Note</h3>
+        
+        <div class="mb-4">
+          <label for="noteContent" class="block mb-2 text-sm font-medium text-[#495057]">Note Content</label>
+          <textarea
+            id="noteContent"
+            [(ngModel)]="newNote.content"
+            rows="4"
+            placeholder="Write your note here..."
+            class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+          </textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label for="noteTags" class="block mb-2 text-sm font-medium text-[#495057]">Tags (comma-separated)</label>
+          <input
+            type="text"
+            id="noteTags"
+            [(ngModel)]="tagsInput"
+            placeholder="work, personal, ideas, etc."
+            class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+        </div>
+        
+        <div class="flex justify-end">
+          <button
+            (click)="addNote()"
+            class="px-4 py-2 bg-[#007bff] text-white border-none rounded-md cursor-pointer text-sm transition-colors hover:bg-[#0069d9]">
+            Add Note
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filter Controls -->
+      <div class="mb-6 flex flex-wrap gap-4">
+        <div class="flex-1 min-w-[250px]">
+          <label for="tagFilter" class="block mb-2 text-sm font-medium text-[#495057]">Filter by Tag</label>
+          <select
+            id="tagFilter"
+            [(ngModel)]="selectedTag"
+            (change)="filterNotes()"
+            class="w-full p-2 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+            <option value="">All Tags</option>
+            <option *ngFor="let tag of availableTags" [value]="tag">{{ tag }}</option>
+          </select>
+        </div>
+        
+        <div class="flex-1 min-w-[250px]">
+          <label for="dateFilter" class="block mb-2 text-sm font-medium text-[#495057]">Filter by Date</label>
+          <input
+            type="date"
+            id="dateFilter"
+            [(ngModel)]="selectedDate"
+            (change)="filterNotes()"
+            class="w-full p-2 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+        </div>
+        
+        <div class="flex items-end">
+          <button
+            (click)="clearFilters()"
+            class="px-4 py-2 bg-[#6c757d] text-white border-none rounded-md cursor-pointer text-sm transition-colors hover:bg-[#5a6268]">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+      
+      <!-- Notes List -->
+      <div class="space-y-4">
+        <div *ngIf="filteredNotes.length === 0" class="text-center p-6 bg-[#f8f9fa] rounded-md text-[#6c757d]">
+          <p class="m-0">No notes found. Create one above!</p>
+        </div>
+        
+        <div *ngFor="let note of filteredNotes" class="bg-[#f8f9fa] rounded-lg p-4 shadow-sm">
+          <!-- View Mode -->
+          <div *ngIf="editingNoteId !== note.id" class="note-content">
+            <div class="flex justify-between mb-3">
+              <div class="text-sm text-[#6c757d]">{{ note.date | date:'MMM d, y, h:mm a' }}</div>
+              <div class="flex gap-2">
+                <button
+                  (click)="setEditingNoteId(note.id)"
+                  class="px-2 py-1 bg-[#6c757d] text-white text-xs border-none rounded cursor-pointer transition-colors hover:bg-[#5a6268]">
+                  Edit
+                </button>
+                <button
+                  (click)="deleteNote(note.id)"
+                  class="px-2 py-1 bg-[#dc3545] text-white text-xs border-none rounded cursor-pointer transition-colors hover:bg-[#c82333]">
+                  Delete
+                </button>
+              </div>
+            </div>
+            
+            <div class="text-[#212529] whitespace-pre-wrap mb-3">{{ note.content }}</div>
+            
+            <div *ngIf="note.tags && note.tags.length > 0" class="flex flex-wrap gap-2">
+              <span *ngFor="let tag of note.tags" 
+                    class="px-2 py-1 text-xs bg-[#e2e3e5] text-[#383d41] rounded-full">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+          
+          <!-- Edit Mode -->
+          <div *ngIf="editingNoteId === note.id" class="note-edit">
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-[#495057]">Content</label>
+              <textarea
+                [(ngModel)]="note.content"
+                rows="4"
+                class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+              </textarea>
+            </div>
+            
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-[#495057]">Tags (comma-separated)</label>
+              <input
+                type="text"
+                [(ngModel)]="editTagsInput"
+                [ngModelOptions]="{standalone: true}"
+                class="w-full p-3 border border-[#ced4da] rounded-md text-base focus:outline-none focus:border-[#80bdff] focus:ring focus:ring-[rgba(0,123,255,0.25)]">
+            </div>
+            
+            <div class="flex justify-end gap-2">
+              <button
+                (click)="updateNote(note)"
+                class="px-3 py-1 bg-[#007bff] text-white border-none rounded cursor-pointer text-sm transition-colors hover:bg-[#0069d9]">
+                Save
+              </button>
+              <button
+                (click)="clearEditingNoteId()"
+                class="px-3 py-1 bg-[#f8f9fa] border border-[#ced4da] text-[#495057] rounded cursor-pointer text-sm transition-colors hover:bg-[#e2e6ea]">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
