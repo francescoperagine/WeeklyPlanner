@@ -1,0 +1,6 @@
+<button 
+    [attr.aria-label]="ariaLabel"
+    class="p-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center"
+    (click)="onClick.emit()">
+    <ng-content></ng-content>
+</button>

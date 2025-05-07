@@ -4,6 +4,9 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { PlannerService } from '@core/services/planner.service';
 import { PlannerItem } from '@shared/models/planner-item.model';
+import { ChevronLeftComponent } from '@shared/components/icons/chevron-left/chevron-left.component';
+import { ChevronRightComponent } from '@shared/components/icons/chevron-right/chevron-right.component';
+import { IconButtonComponent } from '@shared/components/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-weekly-grid',
@@ -73,11 +76,13 @@ export class WeeklyGridComponent implements OnInit {
   }
 
   navigateToPreviousWeek(): void {
+    this.currentWeekStart = new Date(this.currentWeekStart.getTime());
     this.currentWeekStart.setDate(this.currentWeekStart.getDate() - 7);
     this.loadWeekItems();
   }
-
+  
   navigateToNextWeek(): void {
+    this.currentWeekStart = new Date(this.currentWeekStart.getTime());
     this.currentWeekStart.setDate(this.currentWeekStart.getDate() + 7);
     this.loadWeekItems();
   }
