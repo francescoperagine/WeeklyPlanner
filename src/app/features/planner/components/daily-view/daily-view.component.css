@@ -1,28 +1,3 @@
-.priority-critical {
-  @apply bg-red-100 border-l-4 border-l-[#dc3545];
-}
-
-.priority-high {
-  @apply bg-orange-100 border-l-4 border-l-[#fd7e14];
-}
-
-.priority-medium {
-  @apply bg-yellow-100 border-l-4 border-l-[#ffc107];
-}
-
-.priority-low {
-  @apply bg-green-100 border-l-4 border-l-[#28a745];
-}
-
-.priority-optional {
-  @apply bg-gray-100 border-l-4 border-l-[#6c757d];
-}
-
-.priority-none {
-  @apply bg-gray-50 border-l-4 border-l-[#ced4da];
-}
-
-/* For print media */
 @media print {
   .fixed {
     display: none !important;
