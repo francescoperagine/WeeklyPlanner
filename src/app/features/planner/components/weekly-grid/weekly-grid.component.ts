@@ -32,7 +32,7 @@ export class WeeklyGridComponent implements OnInit {
     // Set the start of the week to Monday
     this.setWeekStart();
     
-    // Generate time slots (hourly from 6 AM to 10 PM)
+    // Generate time slots (hourly from 00:00 to 23:00)
     this.generateTimeSlots();
   }
 
@@ -49,8 +49,9 @@ export class WeeklyGridComponent implements OnInit {
   }
 
   private generateTimeSlots(): void {
-    for (let hour = 6; hour <= 22; hour++) {
-      this.timeSlots.push(`${hour}:00`);
+    // Start from 00:00 but we'll handle the display separately in the template
+    for (let hour = 0; hour <= 23; hour++) {
+      this.timeSlots.push(`${hour.toString().padStart(2, '0')}:00`);
     }
   }
 
@@ -73,6 +74,26 @@ export class WeeklyGridComponent implements OnInit {
       return itemDate.getDate() === dayDate.getDate() &&
              itemDate.getMonth() === dayDate.getMonth() &&
              itemDate.getFullYear() === dayDate.getFullYear();
+    });
+  }
+
+  // Get all-day items for a specific day
+  getAllDayItemsForDay(dayIndex: number): PlannerItem[] {
+    return this.getItemsForDay(dayIndex).filter(item => 
+      !item.startTime && !item.endTime // All-day items have no specific time
+    );
+  }
+
+  // Get time-specific items for a specific day and time slot
+  getTimeSpecificItemsForDay(dayIndex: number, timeSlot: string): PlannerItem[] {
+    const itemsForDay = this.getItemsForDay(dayIndex);
+    const [hours] = timeSlot.split(':').map(Number);
+    
+    return itemsForDay.filter(item => {
+      if (!item.startTime) return false;
+      
+      const startHour = new Date(item.startTime).getHours();
+      return startHour === hours;
     });
   }
 
@@ -99,10 +120,13 @@ export class WeeklyGridComponent implements OnInit {
     this.loadWeekItems();
   }
 
-  createNewItem(dayIndex: number, timeSlot: string): void {
+  createNewItem(dayIndex: number, timeSlot: string | null = null): void {
     const date = this.getDayDate(dayIndex);
-    const [hours] = timeSlot.split(':').map(Number);
-    date.setHours(hours, 0, 0, 0);
+    
+    if (timeSlot) {
+      const [hours] = timeSlot.split(':').map(Number);
+      date.setHours(hours, 0, 0, 0);
+    }
     
     // Navigate to create item or open dialog
     // This could dispatch to a service or open a modal
@@ -114,5 +138,24 @@ export class WeeklyGridComponent implements OnInit {
     if (priority < 30) return 'bg-[#d4edda] border-l-[4px] border-l-[#28a745]';
     if (priority < 70) return 'bg-[#fff3cd] border-l-[4px] border-l-[#ffc107]';
     return 'bg-[#f8d7da] border-l-[4px] border-l-[#dc3545]';
+  }
+
+  isWeekend(dayIndex: number): boolean {
+    // Saturday is index 5, Sunday is index 6
+    return dayIndex === 5 || dayIndex === 6;
+  }
+
+  getGMTOffset(): string {
+    const offset = -new Date().getTimezoneOffset();
+    const sign = offset >= 0 ? '+' : '-';
+    const hours = Math.abs(Math.floor(offset / 60));
+    const formattedHours = hours < 10 ? `0${hours}` : hours;
+    
+    return `${sign}${formattedHours}`;
+  }
+
+  // Helper to determine if we should show the time label
+  shouldShowTimeLabel(timeSlot: string): boolean {
+    return timeSlot !== '00:00'; // Hide 00:00 specifically
   }
 }

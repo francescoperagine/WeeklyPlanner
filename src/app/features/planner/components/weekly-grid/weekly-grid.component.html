@@ -21,37 +21,67 @@
   </div>
 
   <!-- Week Grid -->
-  <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
+  <div class="bg-white rounded-lg shadow-sm overflow-x-auto max-h-[calc(100vh-200px)]">
     <div class="grid grid-cols-[80px_repeat(7,1fr)] min-w-[800px]">
-      <!-- Day Headers -->
-      <div class="border-b border-r border-gray-200 p-3 bg-gray-50">
-        <div class="font-medium text-gray-500 text-sm">Time</div>
-      </div>
-      
-      <div *ngFor="let day of weekDays; let dayIndex = index" 
-           class="border-b border-r border-gray-200 p-3 bg-gray-50">
-        <div class="text-center">
-          <div class="font-medium text-gray-700">{{ day }}</div>
-          <div class="text-sm text-gray-500">{{ getDayDate(dayIndex) | date:'MMM d' }}</div>
+      <!-- Sticky Header Section -->
+      <div class="sticky top-0 z-10 col-span-full">
+        <div class="grid grid-cols-[80px_repeat(7,1fr)]">
+          <!-- Day Headers -->
+          <div class="border-b border-r border-gray-200 p-3 bg-gray-50">
+            <div class="font-medium text-gray-500 text-sm">GMT{{ getGMTOffset() }}</div>
+          </div>
+          
+          <div *ngFor="let day of weekDays; let dayIndex = index" 
+              class="border-b border-r border-gray-200 p-3"
+              [ngClass]="{'bg-gray-50': !isWeekend(dayIndex), 'bg-blue-50': isWeekend(dayIndex)}">
+            <div class="text-center">
+              <div class="font-medium text-gray-700">{{ day.substring(0, 3) }} {{ getDayDate(dayIndex) | date:'d' }}</div>
+            </div>
+          </div>
+          
+          <!-- All Day Activities Row -->
+          <div class="border-b border-r border-gray-200 p-3 bg-gray-100">
+            <div class="text-gray-500 text-sm">All Day</div>
+          </div>
+          
+          <div *ngFor="let day of weekDays; let dayIndex = index" 
+              class="border-b border-r border-gray-200 p-2 min-h-[50px]"
+              [ngClass]="{'bg-white': !isWeekend(dayIndex), 'bg-blue-50': isWeekend(dayIndex)}"
+              (click)="createNewItem(dayIndex)">
+            <!-- All day events for this day -->
+            <ng-container *ngIf="getAllDayItemsForDay(dayIndex).length === 0">
+              <div class="text-gray-400 text-xs italic text-center">No all-day events</div>
+            </ng-container>
+            
+            <div *ngFor="let item of getAllDayItemsForDay(dayIndex)" 
+                [ngClass]="calculatePriorityClass(item.priority)"
+                class="p-2 rounded-md shadow-sm mb-1 text-sm">
+              <div class="font-medium">{{ item.title }}</div>
+              <div *ngIf="item.completed" class="text-xs mt-1 text-[#28a745]">✓ Completed</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Time Slots -->
       <ng-container *ngFor="let timeSlot of timeSlots">
-        <div class="border-b border-r border-gray-200 p-2 text-right text-sm text-gray-500">
-          {{ timeSlot }}
+        <!-- Time column -->
+        <div class="border-gray-200 relative">
+          <div *ngIf="shouldShowTimeLabel(timeSlot)" class="relative text-right -top-2 right-3 text-xs text-gray-500">{{ timeSlot }}</div>
         </div>
         
         <div *ngFor="let day of weekDays; let dayIndex = index" 
              class="border-b border-r border-gray-200 p-1 min-h-[60px]"
+             [ngClass]="{'bg-white': !isWeekend(dayIndex), 'bg-blue-50': isWeekend(dayIndex)}"
              (click)="createNewItem(dayIndex, timeSlot)">
-          <!-- Items at this time slot -->
-          <ng-container *ngFor="let item of getItemsForDay(dayIndex)">
-            <div *ngIf="timeSlot === (item.startTime | date:'H:mm')"
-                 [ngClass]="calculatePriorityClass(item.priority)"
+          <!-- Time-specific items for this time slot -->
+          <ng-container *ngFor="let item of getTimeSpecificItemsForDay(dayIndex, timeSlot)">
+            <div [ngClass]="calculatePriorityClass(item.priority)"
                  class="p-2 rounded-md shadow-sm mb-1 text-sm">
               <div class="font-medium">{{ item.title }}</div>
-              <div *ngIf="item.priority" class="text-xs mt-1">Priority: {{ item.priority }}%</div>
+              <div *ngIf="item.startTime && item.endTime" class="text-xs text-gray-600">
+                {{ item.startTime | date:'shortTime' }} - {{ item.endTime | date:'shortTime' }}
+              </div>
               <div *ngIf="item.completed" class="text-xs mt-1 text-[#28a745]">✓ Completed</div>
             </div>
           </ng-container>
