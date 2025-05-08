@@ -11,7 +11,14 @@ import { IconButtonComponent } from '@shared/components/icon-button/icon-button.
 @Component({
   selector: 'app-weekly-grid',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    FormsModule, 
+    ChevronLeftComponent, 
+    ChevronRightComponent,
+    IconButtonComponent
+  ],
   templateUrl: './weekly-grid.component.html',
   styleUrls: ['./weekly-grid.component.css']
 })
